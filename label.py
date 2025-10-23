@@ -604,14 +604,18 @@ class MalwareAnalyzer:
         
         # Use AVClass to get the family
         result['family'] = MalwareAnalyzer.get_family_using_avclass(json_file, one_line_data)
-        
+
         # Build the potential path for the binary file
         # Get the first two characters of sha256 as a subdirectory
-        prefix = sha256[:2]
-        binary_path = os.path.join(binary_base_path, prefix, sha256)
-        
+        # Check if sha256 is valid before trying to access it
+        if sha256 and len(sha256) >= 2:
+            prefix = sha256[:2]
+            binary_path = os.path.join(binary_base_path, prefix, sha256)
+        else:
+            binary_path = None
+
         # Check if the binary file exists
-        if os.path.exists(binary_path):
+        if binary_path and os.path.exists(binary_path):
             # Use readelf once to get CPU, endianness, and file type
             readelf_info = MalwareAnalyzer.get_elf_info_from_readelf(binary_path)
             result['CPU'] = readelf_info['cpu']
