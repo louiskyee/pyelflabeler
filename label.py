@@ -666,8 +666,8 @@ class MalwareAnalyzer:
                 result = future.result()
                 results.append(result)
 
-        # Sort results by file name
-        results.sort(key=lambda x: x['file_name'])
+        # Sort results by file name (handle None values)
+        results.sort(key=lambda x: x['file_name'] if x['file_name'] is not None else '')
 
         # Write to CSV file
         with open(self.config.output_path, encoding="utf-8", mode='w', newline='') as f:
@@ -703,8 +703,8 @@ class MalwareAnalyzer:
                 result = future.result()
                 results.append(result)
 
-        # Sort results by file name (SHA256)
-        results.sort(key=lambda x: x['file_name'])
+        # Sort results by file name (SHA256, handle None values)
+        results.sort(key=lambda x: x['file_name'] if x['file_name'] is not None else '')
 
         # Write to CSV file
         with open(self.config.output_path, encoding="utf-8", mode='w', newline='') as f:
