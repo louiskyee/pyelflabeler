@@ -493,8 +493,13 @@ class MalwareAnalyzer:
         Process a single benignware binary file.
 
         :param binary_path: Path to the binary file.
-        :return: Dictionary containing extracted information.
+        :return: Dictionary containing extracted information, or None if file doesn't exist.
         """
+        # Check if the binary file exists before processing
+        if not os.path.exists(binary_path):
+            logging.debug(f"Binary file does not exist, skipping: {binary_path}")
+            return None
+
         # Calculate hashes from the binary file
         sha256, md5 = MalwareAnalyzer.calculate_file_hashes(binary_path)
 
@@ -613,30 +618,28 @@ class MalwareAnalyzer:
         else:
             binary_path = None
 
-        # Check if the binary file exists
-        if binary_path and os.path.exists(binary_path):
-            # Use readelf once to get CPU, endianness, and file type
-            readelf_info = MalwareAnalyzer.get_elf_info_from_readelf(binary_path)
-            result['CPU'] = readelf_info['cpu']
-            result['endianness'] = readelf_info['endianness']
-            result['file_type'] = readelf_info['file_type']
+        # Skip this record if binary file doesn't exist
+        if not binary_path or not os.path.exists(binary_path):
+            logging.debug(f"Binary file does not exist, skipping record for: {sha256}")
+            return None
 
-            # Run diec analysis on the binary file
-            diec_is_packed, diec_packer_info, diec_packing_method = MalwareAnalyzer.run_diec_analysis(binary_path)
-            result['diec_is_packed'] = diec_is_packed
-            result['diec_packer_info'] = diec_packer_info
-            result['diec_packing_method'] = diec_packing_method
+        # Use readelf once to get CPU, endianness, and file type
+        readelf_info = MalwareAnalyzer.get_elf_info_from_readelf(binary_path)
+        result['CPU'] = readelf_info['cpu']
+        result['endianness'] = readelf_info['endianness']
+        result['file_type'] = readelf_info['file_type']
 
-            # Read ELF binary once to get bits, load segments, and section headers
-            binary_info = MalwareAnalyzer.get_elf_binary_info(binary_path)
-            result['bits'] = binary_info['bits']
-            result['load_segments'] = binary_info['load_segments']
-            result['has_section_name'] = binary_info['has_section_name']
-        else:
-            # If the binary file doesn't exist, use CPUType from exiftool
-            result['CPU'] = json_data.get('additional_info', {}).get('exiftool', {}).get('CPUType', None)
-            # Keep the original endianness from JSON and file_type as None if binary doesn't exist
-            # bits, load_segments, and has_section_name remain None
+        # Run diec analysis on the binary file
+        diec_is_packed, diec_packer_info, diec_packing_method = MalwareAnalyzer.run_diec_analysis(binary_path)
+        result['diec_is_packed'] = diec_is_packed
+        result['diec_packer_info'] = diec_packer_info
+        result['diec_packing_method'] = diec_packing_method
+
+        # Read ELF binary once to get bits, load segments, and section headers
+        binary_info = MalwareAnalyzer.get_elf_binary_info(binary_path)
+        result['bits'] = binary_info['bits']
+        result['load_segments'] = binary_info['load_segments']
+        result['has_section_name'] = binary_info['has_section_name']
 
         return result
 
@@ -702,10 +705,12 @@ class MalwareAnalyzer:
 
             for future in tqdm(as_completed(futures), total=len(futures), desc="Analyzing benignware", unit="file"):
                 result = future.result()
-                results.append(result)
+                # Skip None results (file doesn't exist or processing failed)
+                if result is not None:
+                    results.append(result)
 
         # Sort results by file name (SHA256, handle None values)
-        results.sort(key=lambda x: x['file_name'] if x['file_name'] is not None else '')
+        results.sort(key=lambda x: x['file_name'] if x and x['file_name'] is not None else '')
 
         # Write to CSV file
         with open(self.config.output_path, encoding="utf-8", mode='w', newline='') as f:
