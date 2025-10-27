@@ -556,14 +556,28 @@ class MalwareAnalyzer:
 
         :param json_file: Path to the JSON file.
         :param binary_base_path: Base path for binary files.
-        :return: Dictionary containing extracted information.
+        :return: Dictionary containing extracted information, or None if processing failed.
         """
         one_line_data, json_data = MalwareAnalyzer.convert_to_one_line(json_file)
-        
-        # Default values for all fields
+
+        # If JSON parsing failed, return None to indicate this record should be skipped
+        if json_data is None:
+            return None
+
+        # Get file metadata
+        sha256 = json_data.get('sha256', None)
+        md5 = json_data.get('md5', None)
+        size = json_data.get('size', 0)
+        first_seen = json_data.get('first_seen', None)
+
+        # Skip this record if sha256 is missing or empty
+        if not sha256:
+            return None
+
+        # Initialize result dictionary
         result = {
-            'file_name': os.path.basename(json_file),
-            'md5': None,
+            'file_name': sha256,
+            'md5': md5,
             'label': None,
             'file_type': None,
             'CPU': None,
@@ -572,36 +586,21 @@ class MalwareAnalyzer:
             'load_segments': None,
             'has_section_name': None,
             'family': None,
-            'first_seen': None,
-            'size': 0,
+            'first_seen': first_seen,
+            'size': size,
             'diec_is_packed': False,
             'diec_packer_info': None,
             'diec_packing_method': None
         }
-        
-        if json_data is None:
-            return result
-        
-        # Get file metadata
-        sha256 = json_data.get('sha256', None)
-        md5 = json_data.get('md5', None)
-        size = json_data.get('size', 0)
-        first_seen = json_data.get('first_seen', None)
-        
-        # Update base fields
-        result['file_name'] = sha256
-        result['md5'] = md5
-        result['size'] = size
-        result['first_seen'] = first_seen
-        
+
         # Determine if it's malware
         positives = json_data.get('positives', 0)
         result['label'] = 'Malware' if positives > 0 else 'Benignware'
-        
+
         # Extract endianness from gandelf information
         gandelf_info = json_data.get('additional_info', {}).get('gandelf', {}).get('header', {})
         result['endianness'] = gandelf_info.get('data', None)
-        
+
         # Use AVClass to get the family
         result['family'] = MalwareAnalyzer.get_family_using_avclass(json_file, one_line_data)
 
@@ -664,7 +663,9 @@ class MalwareAnalyzer:
 
             for future in tqdm(as_completed(futures), total=len(futures), desc="Analyzing files", unit="file"):
                 result = future.result()
-                results.append(result)
+                # Skip None results (failed JSON parsing or missing sha256)
+                if result is not None:
+                    results.append(result)
 
         # Sort results by file name (handle None values)
         results.sort(key=lambda x: x['file_name'] if x['file_name'] is not None else '')

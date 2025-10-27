@@ -53,7 +53,7 @@ A powerful Python tool for analyzing and labeling ELF binary datasets, designed 
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/elf-binary-labeler.git
+   git clone https://github.com/louiskyee/elf-binary-labeler.git
    cd elf-binary-labeler
    ```
 
@@ -201,9 +201,9 @@ If you use this tool in your research, please cite:
 ```bibtex
 @software{elf_binary_labeler,
   title={ELF Binary Labeler: A Tool for Malware Dataset Analysis},
-  author={Your Name},
+  author={louiskyee},
   year={2024},
-  url={https://github.com/yourusername/elf-binary-labeler}
+  url={https://github.com/louiskyee/elf-binary-labeler}
 }
 ```
 

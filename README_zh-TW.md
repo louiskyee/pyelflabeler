@@ -53,7 +53,7 @@
 
 1. 複製此儲存庫：
    ```bash
-   git clone https://github.com/yourusername/elf-binary-labeler.git
+   git clone https://github.com/louiskyee/elf-binary-labeler.git
    cd elf-binary-labeler
    ```
 
@@ -201,9 +201,9 @@ file_name,md5,label,file_type,CPU,bits,endianness,load_segments,has_section_name
 ```bibtex
 @software{elf_binary_labeler,
   title={ELF Binary Labeler: 惡意軟體數據集分析工具},
-  author={Your Name},
+  author={louiskyee},
   year={2024},
-  url={https://github.com/yourusername/elf-binary-labeler}
+  url={https://github.com/louiskyee/elf-binary-labeler}
 }
 ```
 
