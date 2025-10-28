@@ -43,3 +43,6 @@ htmlcov/
 *.tmp
 tmp/
 temp/
+
+# Test data
+test_benign_data/

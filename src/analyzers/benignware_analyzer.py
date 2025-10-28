@@ -60,7 +60,8 @@ class BenignwareAnalyzer(BaseAnalyzer):
 
         print(f"Found {len(self.file_list)} binary files")
 
-    def process_single_file(self, binary_path):
+    @staticmethod
+    def process_single_file(binary_path):
         """
         Process a single benignware binary file.
 

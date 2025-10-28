@@ -62,9 +62,24 @@ class BaseAnalyzer(ABC):
         print(f"Using {max_workers} processes for parallel processing")
 
         with ProcessPoolExecutor(max_workers=max_workers) as executor:
-            # Submit all files for processing
-            futures = [executor.submit(self.process_single_file, file_path)
-                      for file_path in self.file_list]
+            # Submit all files for processing using the class's static method
+            # This avoids serializing the entire self object for each task
+            static_method = self.__class__.process_single_file
+
+            # Check if process_single_file needs binary_base_path (for MalwareAnalyzer)
+            # We can check the method signature
+            import inspect
+            sig = inspect.signature(static_method)
+            needs_binary_path = 'binary_base_path' in sig.parameters
+
+            if needs_binary_path:
+                # For MalwareAnalyzer: pass binary_base_path
+                futures = [executor.submit(static_method, file_path, self.binary_base_path)
+                          for file_path in self.file_list]
+            else:
+                # For BenignwareAnalyzer: only pass file_path
+                futures = [executor.submit(static_method, file_path)
+                          for file_path in self.file_list]
 
             # Collect results with progress bar
             for future in tqdm(as_completed(futures), total=len(futures),

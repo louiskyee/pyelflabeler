@@ -193,12 +193,9 @@ file_name,md5,label,file_type,CPU,bits,endianness,load_segments,has_section_name
 
 ## Performance
 
-- Utilizes all available CPU cores for parallel processing
+- High-speed parallel processing utilizing all available CPU cores
 - Optimized single-pass file reading for ELF analysis
 - Progress bars for real-time status updates
-
-Example performance (tested on 8-core system):
-- ~1000 files processed in ~5-10 minutes (depending on binary sizes and analysis depth)
 
 ## Project Structure
 

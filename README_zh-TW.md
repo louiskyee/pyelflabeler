@@ -14,7 +14,7 @@
   - ELF 標頭資訊（CPU、架構、位元順序、文件類型）
   - 二進制元數據（位元數、載入段、節區標頭）
   - 文件雜湊（MD5、SHA256）
-  - 使用 DiE（Detect It Easy）進行打包偵測
+  - 使用 DiE（Detect It Easy）進行加殼偵測
   - 使用 AVClass 進行惡意軟體家族分類
 
 - **效能優化**
@@ -34,7 +34,7 @@
 
 1. **Python 3.10+**
 
-2. **DiE (Detect It Easy)** - 用於打包偵測
+2. **DiE (Detect It Easy)** - 用於加殼偵測
    - 下載位置：https://github.com/horsicq/Detect-It-Easy
    - 確保 `diec` 命令在 PATH 中可用
 
@@ -174,9 +174,9 @@ pyelflabeler --mode benignware \
 | `family` | 惡意軟體家族（僅惡意軟體模式）|
 | `first_seen` | 首次發現時間戳（惡意軟體模式）|
 | `size` | 文件大小（位元組）|
-| `diec_is_packed` | 二進制是否被打包（True/False）|
-| `diec_packer_info` | 打包器名稱和版本 |
-| `diec_packing_method` | 打包方法詳情 |
+| `diec_is_packed` | 二進制是否被加殼（True/False）|
+| `diec_packer_info` | 加殼器名稱和版本 |
+| `diec_packing_method` | 加殼方法詳情 |
 
 ### 輸出範例
 
@@ -193,12 +193,9 @@ file_name,md5,label,file_type,CPU,bits,endianness,load_segments,has_section_name
 
 ## 效能表現
 
-- 利用所有可用的 CPU 核心進行平行處理
+- 高速平行處理，利用所有可用的 CPU 核心
 - 優化的單次 ELF 分析檔案讀取
 - 即時狀態更新的進度條
-
-效能範例（在 8 核心系統上測試）：
-- 約 1000 個文件在 5-10 分鐘內處理完成（取決於二進制大小和分析深度）
 
 ## 專案結構
 
@@ -221,7 +218,7 @@ dataset_labeler/
 │   └── utils/
 │       ├── elf_utils.py       # ELF 二進制工具
 │       ├── hash_utils.py      # 文件雜湊
-│       └── packer_utils.py    # 打包偵測與 AVClass
+│       └── packer_utils.py    # 加殼偵測與 AVClass
 └── tests/                     # 單元測試（即將推出）
 ```
 
@@ -297,7 +294,7 @@ class CustomAnalyzer(BaseAnalyzer):
 ## 致謝
 
 - [AVClass](https://github.com/malicialab/avclass) - 惡意軟體家族分類
-- [Detect It Easy](https://github.com/horsicq/Detect-It-Easy) - 打包器偵測
+- [Detect It Easy](https://github.com/horsicq/Detect-It-Easy) - 加殼器偵測
 - [tqdm](https://github.com/tqdm/tqdm) - 進度條
 
 ## 聯絡方式
