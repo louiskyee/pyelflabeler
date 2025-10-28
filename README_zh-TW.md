@@ -98,19 +98,30 @@ python3 main.py --mode malware \
 ```
 
 **預期的目錄結構：**
+
+JSON 報告和二進制文件都按 SHA256 雜湊前綴組織：
+
 ```
 /path/to/json_reports/
-├── sample1.json
-├── sample2.json
+├── 00/
+│   ├── 0000002158d35c2bb5e7d96a39ff464ea4c83de8c5fd72094736f79125aaca11.json
+│   ├── 0000002a10959ec38b808d8252eed2e814294fbb25d2cd016b24bf853a44857e.json
+│   └── ...
+├── 01/
+│   └── ...
 └── ...
 
 /path/to/malware/binaries/
+├── 00/
+│   ├── 0000002158d35c2bb5e7d96a39ff464ea4c83de8c5fd72094736f79125aaca11
+│   ├── 0000002a10959ec38b808d8252eed2e814294fbb25d2cd016b24bf853a44857e
+│   └── ...
 ├── 01/
-│   └── 01a2b3c4...  (SHA256 雜湊)
-├── 02/
-│   └── 02d5e6f7...
+│   └── ...
 └── ...
 ```
+
+檔案以其 SHA256 雜湊的前兩個字符命名的子目錄中組織。
 
 ### 良性軟體模式
 
