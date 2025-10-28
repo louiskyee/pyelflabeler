@@ -44,7 +44,19 @@ A powerful Python tool for analyzing and labeling ELF binary datasets, designed 
 
 ## Installation
 
-### Method 1: Using uv (Recommended)
+### Method 1: Install from PyPI (Recommended)
+
+```bash
+pip install pyelflabeler
+```
+
+After installation, you can run the tool using the `pyelflabeler` command:
+
+```bash
+pyelflabeler --help
+```
+
+### Method 2: Install from source with uv
 
 [uv](https://github.com/astral-sh/uv) is a fast Python package installer and resolver.
 
@@ -53,34 +65,36 @@ A powerful Python tool for analyzing and labeling ELF binary datasets, designed 
    curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 
-2. Clone and setup:
+2. Clone and install:
    ```bash
-   git clone https://github.com/louiskyee/dataset-labeler.git
-   cd dataset-labeler
+   git clone https://github.com/louiskyee/pyelflabeler.git
+   cd pyelflabeler
    uv sync
    ```
 
 3. Run the tool:
    ```bash
-   uv run python main.py --help
+   uv run pyelflabeler --help
+   # Or use Python module directly
+   uv run python -m src.main --help
    ```
 
-### Method 2: Using pip (Traditional)
+### Method 3: Install from source with pip
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/louiskyee/dataset-labeler.git
-   cd dataset-labeler
+   git clone https://github.com/louiskyee/pyelflabeler.git
+   cd pyelflabeler
    ```
 
-2. Install Python dependencies:
+2. Install in editable mode:
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    ```
 
 3. Verify installation:
    ```bash
-   python3 main.py --help
+   pyelflabeler --help
    diec --version
    ```
 
@@ -91,7 +105,7 @@ A powerful Python tool for analyzing and labeling ELF binary datasets, designed 
 Analyze VirusTotal JSON reports combined with binary files:
 
 ```bash
-python3 main.py --mode malware \
+pyelflabeler --mode malware \
     -i /path/to/json_reports \
     -b /path/to/malware/binaries \
     -o malware_output.csv
@@ -128,7 +142,7 @@ Files are organized in subdirectories named by the first two characters of their
 Analyze binary files directly without JSON reports:
 
 ```bash
-python3 main.py --mode benignware \
+pyelflabeler --mode benignware \
     -b /path/to/benignware/binaries \
     -o benignware_output.csv
 ```
@@ -272,11 +286,11 @@ This project is open source and available under the [MIT License](LICENSE).
 If you use this tool in your research, please cite:
 
 ```bibtex
-@software{elf_binary_labeler,
-  title={ELF Binary Labeler: A Tool for Malware Dataset Analysis},
+@software{pyelflabeler,
+  title={PyELFLabeler: A Tool for ELF Binary Dataset Analysis},
   author={louiskyee},
   year={2024},
-  url={https://github.com/louiskyee/elf-binary-labeler}
+  url={https://github.com/louiskyee/pyelflabeler}
 }
 ```
 

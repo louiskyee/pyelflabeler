@@ -44,7 +44,19 @@
 
 ## 安裝步驟
 
-### 方法 1：使用 uv（推薦）
+### 方法 1：從 PyPI 安裝（推薦）
+
+```bash
+pip install pyelflabeler
+```
+
+安裝後，可以使用 `pyelflabeler` 命令執行工具：
+
+```bash
+pyelflabeler --help
+```
+
+### 方法 2：使用 uv 從原始碼安裝
 
 [uv](https://github.com/astral-sh/uv) 是快速的 Python 套件安裝器和解析器。
 
@@ -53,34 +65,36 @@
    curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 
-2. 複製並設定：
+2. 複製並安裝：
    ```bash
-   git clone https://github.com/louiskyee/dataset-labeler.git
-   cd dataset-labeler
+   git clone https://github.com/louiskyee/pyelflabeler.git
+   cd pyelflabeler
    uv sync
    ```
 
 3. 執行工具：
    ```bash
-   uv run python main.py --help
+   uv run pyelflabeler --help
+   # 或直接使用 Python 模組
+   uv run python -m src.main --help
    ```
 
-### 方法 2：使用 pip（傳統方式）
+### 方法 3：使用 pip 從原始碼安裝
 
 1. 複製此儲存庫：
    ```bash
-   git clone https://github.com/louiskyee/dataset-labeler.git
-   cd dataset-labeler
+   git clone https://github.com/louiskyee/pyelflabeler.git
+   cd pyelflabeler
    ```
 
-2. 安裝 Python 相依套件：
+2. 以可編輯模式安裝：
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    ```
 
 3. 驗證安裝：
    ```bash
-   python3 main.py --help
+   pyelflabeler --help
    diec --version
    ```
 
@@ -91,7 +105,7 @@
 分析 VirusTotal JSON 報告結合二進制文件：
 
 ```bash
-python3 main.py --mode malware \
+pyelflabeler --mode malware \
     -i /path/to/json_reports \
     -b /path/to/malware/binaries \
     -o malware_output.csv
@@ -128,7 +142,7 @@ JSON 報告和二進制文件都按 SHA256 雜湊前綴組織：
 直接分析二進制文件，無需 JSON 報告：
 
 ```bash
-python3 main.py --mode benignware \
+pyelflabeler --mode benignware \
     -b /path/to/benignware/binaries \
     -o benignware_output.csv
 ```
@@ -272,11 +286,11 @@ class CustomAnalyzer(BaseAnalyzer):
 如果您在研究中使用此工具，請引用：
 
 ```bibtex
-@software{elf_binary_labeler,
-  title={ELF Binary Labeler: 惡意軟體數據集分析工具},
+@software{pyelflabeler,
+  title={PyELFLabeler: ELF 二進制數據集分析工具},
   author={louiskyee},
   year={2024},
-  url={https://github.com/louiskyee/elf-binary-labeler}
+  url={https://github.com/louiskyee/pyelflabeler}
 }
 ```
 

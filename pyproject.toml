@@ -1,10 +1,24 @@
 [project]
-name = "dataset-labeler"
-version = "0.1.0"
+name = "pyelflabeler"
+version = "0.2.0"
 description = "ELF Binary Analysis Tool - Label malware or benignware datasets"
 readme = "README.md"
+license = { text = "MIT" }
 authors = [
     { name = "louiskyee", email = "bolin8017@gmail.com" }
+]
+keywords = ["malware", "elf", "binary-analysis", "security", "dataset", "labeling"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 requires-python = ">=3.10"
 dependencies = [
@@ -13,8 +27,13 @@ dependencies = [
     "avclass-malicialab>=2.8.10",
 ]
 
+[project.urls]
+Homepage = "https://github.com/louiskyee/pyelflabeler"
+Repository = "https://github.com/louiskyee/pyelflabeler"
+Issues = "https://github.com/louiskyee/pyelflabeler/issues"
+
 [project.scripts]
-dataset-labeler = "src.main:main"
+pyelflabeler = "src.main:main"
 
 [project.optional-dependencies]
 dev = [
@@ -23,5 +42,18 @@ dev = [
 ]
 
 [build-system]
-requires = ["uv_build>=0.8.5,<0.9.0"]
-build-backend = "uv_build"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "test_benign_data/",
+    ".claude/",
+    ".git/",
+    ".gitignore",
+    "*.pyc",
+    "__pycache__/",
+]
