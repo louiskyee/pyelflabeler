@@ -1,0 +1,27 @@
+[project]
+name = "dataset-labeler"
+version = "0.1.0"
+description = "ELF Binary Analysis Tool - Label malware or benignware datasets"
+readme = "README.md"
+authors = [
+    { name = "louiskyee", email = "bolin8017@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "tqdm>=4.65.0",
+    "pyelftools>=0.29",
+    "avclass-malicialab>=2.8.10",
+]
+
+[project.scripts]
+dataset-labeler = "src.main:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.5,<0.9.0"]
+build-backend = "uv_build"

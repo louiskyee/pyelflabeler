@@ -1,1 +1,3 @@
 tqdm>=4.65.0
+pyelftools>=0.29
+avclass-malicialab>=2.8.10

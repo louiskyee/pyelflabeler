@@ -22,39 +22,55 @@ A powerful Python tool for analyzing and labeling ELF binary datasets, designed 
   - Progress tracking with tqdm
   - Efficient single-pass file reading
 
+- **Modern Architecture**
+  - Modular design with separation of concerns
+  - Factory pattern for extensibility
+  - Abstract base class for easy extension
+  - Managed by modern Python tooling (uv, pyproject.toml)
+
 ## Prerequisites
 
 ### Required Tools
 
-1. **Python 3.8+** with the following packages:
-   ```bash
-   pip install tqdm
-   ```
+1. **Python 3.10+**
 
-2. **readelf** (part of binutils)
-   ```bash
-   # Ubuntu/Debian
-   sudo apt-get install binutils
-
-   # RHEL/CentOS
-   sudo yum install binutils
-   ```
-
-3. **DiE (Detect It Easy)** - for packing detection
+2. **DiE (Detect It Easy)** - for packing detection
    - Download from: https://github.com/horsicq/Detect-It-Easy
    - Ensure `diec` command is available in PATH
 
-4. **AVClass** (Optional, for malware mode only)
-   - Clone from: https://github.com/malicialab/avclass
-   - Follow AVClass installation instructions
-   - Ensure `avclass` command is available in PATH
+3. **AVClass** - for malware family classification (malware mode)
+   - Automatically installed via Python dependencies
+   - Or manually install: `pip install avclass-malicialab`
 
 ## Installation
 
+### Method 1: Using uv (Recommended)
+
+[uv](https://github.com/astral-sh/uv) is a fast Python package installer and resolver.
+
+1. Install uv:
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+2. Clone and setup:
+   ```bash
+   git clone https://github.com/louiskyee/dataset-labeler.git
+   cd dataset-labeler
+   uv sync
+   ```
+
+3. Run the tool:
+   ```bash
+   uv run python main.py --help
+   ```
+
+### Method 2: Using pip (Traditional)
+
 1. Clone this repository:
    ```bash
-   git clone https://github.com/louiskyee/elf-binary-labeler.git
-   cd elf-binary-labeler
+   git clone https://github.com/louiskyee/dataset-labeler.git
+   cd dataset-labeler
    ```
 
 2. Install Python dependencies:
@@ -62,11 +78,10 @@ A powerful Python tool for analyzing and labeling ELF binary datasets, designed 
    pip install -r requirements.txt
    ```
 
-3. Verify tool dependencies:
+3. Verify installation:
    ```bash
-   readelf --version
+   python3 main.py --help
    diec --version
-   avclass --help  # Optional, for malware mode
    ```
 
 ## Usage
@@ -76,7 +91,7 @@ A powerful Python tool for analyzing and labeling ELF binary datasets, designed 
 Analyze VirusTotal JSON reports combined with binary files:
 
 ```bash
-python3 label.py --mode malware \
+python3 main.py --mode malware \
     -i /path/to/json_reports \
     -b /path/to/malware/binaries \
     -o malware_output.csv
@@ -102,7 +117,7 @@ python3 label.py --mode malware \
 Analyze binary files directly without JSON reports:
 
 ```bash
-python3 label.py --mode benignware \
+python3 main.py --mode benignware \
     -b /path/to/benignware/binaries \
     -o benignware_output.csv
 ```
@@ -159,6 +174,53 @@ file_name,md5,label,file_type,CPU,bits,endianness,load_segments,has_section_name
 
 Example performance (tested on 8-core system):
 - ~1000 files processed in ~5-10 minutes (depending on binary sizes and analysis depth)
+
+## Project Structure
+
+The project follows modern Python best practices with a modular architecture:
+
+```
+dataset_labeler/
+├── main.py                    # CLI entry point
+├── pyproject.toml             # Project configuration (uv)
+├── requirements.txt           # Legacy pip support
+├── src/
+│   ├── main.py                # Main CLI logic
+│   ├── config.py              # Configuration management
+│   ├── constants.py           # CSV field definitions
+│   ├── factory.py             # Factory pattern for analyzer creation
+│   ├── analyzers/
+│   │   ├── base_analyzer.py       # Abstract base class
+│   │   ├── malware_analyzer.py    # Malware analysis
+│   │   └── benignware_analyzer.py # Benignware analysis
+│   └── utils/
+│       ├── elf_utils.py       # ELF binary utilities
+│       ├── hash_utils.py      # File hashing
+│       └── packer_utils.py    # Packer detection & AVClass
+└── tests/                     # Unit tests (coming soon)
+```
+
+### Extensibility
+
+Adding a new analyzer type is straightforward:
+
+1. Create a new analyzer class in `src/analyzers/` inheriting from `BaseAnalyzer`
+2. Implement `collect_files()` and `process_single_file()` methods
+3. Register it in the factory (`src/factory.py`)
+
+Example:
+```python
+from src.analyzers.base_analyzer import BaseAnalyzer
+
+class CustomAnalyzer(BaseAnalyzer):
+    def collect_files(self):
+        # Your implementation
+        pass
+
+    def process_single_file(self, file_path):
+        # Your implementation
+        pass
+```
 
 ## Troubleshooting
 

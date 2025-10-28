@@ -22,39 +22,55 @@
   - 使用 tqdm 追蹤進度
   - 高效的單次檔案讀取
 
+- **現代化架構**
+  - 模組化設計，關注點分離
+  - 工廠模式提供擴展性
+  - 抽象基底類別便於擴展
+  - 使用現代 Python 工具管理（uv、pyproject.toml）
+
 ## 系統需求
 
 ### 必需工具
 
-1. **Python 3.8+** 及以下套件：
-   ```bash
-   pip install tqdm
-   ```
+1. **Python 3.10+**
 
-2. **readelf**（binutils 的一部分）
-   ```bash
-   # Ubuntu/Debian
-   sudo apt-get install binutils
-
-   # RHEL/CentOS
-   sudo yum install binutils
-   ```
-
-3. **DiE (Detect It Easy)** - 用於打包偵測
+2. **DiE (Detect It Easy)** - 用於打包偵測
    - 下載位置：https://github.com/horsicq/Detect-It-Easy
    - 確保 `diec` 命令在 PATH 中可用
 
-4. **AVClass**（選用，僅惡意軟體模式需要）
-   - 複製自：https://github.com/malicialab/avclass
-   - 依照 AVClass 安裝說明
-   - 確保 `avclass` 命令在 PATH 中可用
+3. **AVClass** - 惡意軟體家族分類（惡意軟體模式）
+   - 會透過 Python 相依套件自動安裝
+   - 或手動安裝：`pip install avclass-malicialab`
 
 ## 安裝步驟
 
+### 方法 1：使用 uv（推薦）
+
+[uv](https://github.com/astral-sh/uv) 是快速的 Python 套件安裝器和解析器。
+
+1. 安裝 uv：
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+2. 複製並設定：
+   ```bash
+   git clone https://github.com/louiskyee/dataset-labeler.git
+   cd dataset-labeler
+   uv sync
+   ```
+
+3. 執行工具：
+   ```bash
+   uv run python main.py --help
+   ```
+
+### 方法 2：使用 pip（傳統方式）
+
 1. 複製此儲存庫：
    ```bash
-   git clone https://github.com/louiskyee/elf-binary-labeler.git
-   cd elf-binary-labeler
+   git clone https://github.com/louiskyee/dataset-labeler.git
+   cd dataset-labeler
    ```
 
 2. 安裝 Python 相依套件：
@@ -62,11 +78,10 @@
    pip install -r requirements.txt
    ```
 
-3. 驗證工具相依性：
+3. 驗證安裝：
    ```bash
-   readelf --version
+   python3 main.py --help
    diec --version
-   avclass --help  # 選用，僅惡意軟體模式需要
    ```
 
 ## 使用方式
@@ -76,7 +91,7 @@
 分析 VirusTotal JSON 報告結合二進制文件：
 
 ```bash
-python3 label.py --mode malware \
+python3 main.py --mode malware \
     -i /path/to/json_reports \
     -b /path/to/malware/binaries \
     -o malware_output.csv
@@ -102,7 +117,7 @@ python3 label.py --mode malware \
 直接分析二進制文件，無需 JSON 報告：
 
 ```bash
-python3 label.py --mode benignware \
+python3 main.py --mode benignware \
     -b /path/to/benignware/binaries \
     -o benignware_output.csv
 ```
@@ -159,6 +174,53 @@ file_name,md5,label,file_type,CPU,bits,endianness,load_segments,has_section_name
 
 效能範例（在 8 核心系統上測試）：
 - 約 1000 個文件在 5-10 分鐘內處理完成（取決於二進制大小和分析深度）
+
+## 專案結構
+
+此專案遵循現代 Python 最佳實踐，採用模組化架構：
+
+```
+dataset_labeler/
+├── main.py                    # CLI 入口點
+├── pyproject.toml             # 專案配置（uv）
+├── requirements.txt           # 傳統 pip 支援
+├── src/
+│   ├── main.py                # 主要 CLI 邏輯
+│   ├── config.py              # 配置管理
+│   ├── constants.py           # CSV 欄位定義
+│   ├── factory.py             # 分析器工廠模式
+│   ├── analyzers/
+│   │   ├── base_analyzer.py       # 抽象基底類別
+│   │   ├── malware_analyzer.py    # 惡意軟體分析
+│   │   └── benignware_analyzer.py # 良性軟體分析
+│   └── utils/
+│       ├── elf_utils.py       # ELF 二進制工具
+│       ├── hash_utils.py      # 文件雜湊
+│       └── packer_utils.py    # 打包偵測與 AVClass
+└── tests/                     # 單元測試（即將推出）
+```
+
+### 擴展性
+
+新增分析器類型很簡單：
+
+1. 在 `src/analyzers/` 中建立新的分析器類別，繼承自 `BaseAnalyzer`
+2. 實作 `collect_files()` 和 `process_single_file()` 方法
+3. 在工廠模式中註冊（`src/factory.py`）
+
+範例：
+```python
+from src.analyzers.base_analyzer import BaseAnalyzer
+
+class CustomAnalyzer(BaseAnalyzer):
+    def collect_files(self):
+        # 您的實作
+        pass
+
+    def process_single_file(self, file_path):
+        # 您的實作
+        pass
+```
 
 ## 疑難排解
 

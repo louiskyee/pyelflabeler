@@ -13,6 +13,11 @@ build/
 venv/
 env/
 ENV/
+.venv/
+
+# UV
+uv.lock
+.python-version
 
 # Output files
 *.csv
