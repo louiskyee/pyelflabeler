@@ -170,6 +170,7 @@ pyelflabeler --mode benignware \
 | `bits` | 二進制位元數（32 或 64）|
 | `endianness` | 位元組順序（小端序/大端序）|
 | `load_segments` | PT_LOAD 段的數量 |
+| `is_stripped` | 符號表是否被移除（True/False）|
 | `has_section_name` | 是否存在節區標頭 |
 | `family` | 惡意軟體家族（僅惡意軟體模式）|
 | `first_seen` | 首次發現時間戳（惡意軟體模式）|

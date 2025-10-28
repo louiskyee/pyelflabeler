@@ -170,6 +170,7 @@ The tool generates a CSV file with the following columns:
 | `bits` | Binary bits (32 or 64) |
 | `endianness` | Byte order (little/big endian) |
 | `load_segments` | Number of PT_LOAD segments |
+| `is_stripped` | Whether symbol table is stripped (True/False) |
 | `has_section_name` | Whether section headers exist |
 | `family` | Malware family (malware mode only) |
 | `first_seen` | First seen timestamp (malware mode) |
